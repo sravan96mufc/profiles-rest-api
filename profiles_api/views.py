@@ -10,7 +10,10 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from rest_framework.permissions import IsAuthenticated
 from profiles_api import serializers
+from django.shortcuts import render
 
+#######################3import shortcuts page 210
+from .models import Category, Product
 
 class HelloApiView(APIView):
     """Test API View"""
@@ -126,3 +129,28 @@ class UserProfileFeedViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Sets the user profile to the logged in user"""
         serializer.save(user_profile=self.request.user)
+
+################################################3
+
+
+def product_list(request, category_slug=None):
+    category = None
+    categories = Categories.objects.all()
+    products = Product.objects.filter(available=True)
+    if category_slug:
+        category = get_object_or_404(Category, slug=category_slug)
+    return render(request,
+                    'profiles_api/product/list.html',
+                    {'category': category,
+                     'categories': categories,
+                     'products': products})
+
+
+def product_detail(request, id, slug):
+    product = get_object_or_404(Product,
+                                id=id,
+                                slug=slug)
+                                ###available=True)
+    return render(request,
+                    'profiles_api/product/detail.html',
+                    {'product': product})
